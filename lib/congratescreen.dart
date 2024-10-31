@@ -84,27 +84,28 @@ class _CongratescreenState extends State<Congratescreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(width: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (widget.index < 3) {
+                            if (widget.index < 3)
+                              ElevatedButton(
+                                onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => GuessScreen(
-                                              index: ++widget.index,
-                                              initialscore: widget.score,
-                                            )),
+                                      builder: (context) => GuessScreen(
+                                        index: widget.index +
+                                            1, // Increment index safely here
+                                        initialscore: widget.score,
+                                      ),
+                                    ),
                                   );
-                                }
-                              },
-                              child: Text("Next Level",
-                                  style: TextStyle(fontSize: 13)),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF9AC308),
-                                foregroundColor: Colors.black,
-                                elevation: 5,
+                                },
+                                child: Text("Next Level",
+                                    style: TextStyle(fontSize: 13)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF9AC308),
+                                  foregroundColor: Colors.black,
+                                  elevation: 5,
+                                ),
                               ),
-                            ),
                             Spacer(),
                             ElevatedButton(
                               onPressed: () {
@@ -122,9 +123,7 @@ class _CongratescreenState extends State<Congratescreen> {
                                 elevation: 5,
                               ),
                             ),
-                            SizedBox(
-                              width: 20,
-                            )
+                            SizedBox(width: 20),
                           ],
                         ),
                       ],

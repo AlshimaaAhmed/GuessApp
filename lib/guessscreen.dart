@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:guessapp/gameoverscreen.dart';
 
 import 'congratescreen.dart';
 
@@ -70,6 +73,10 @@ class _GuessScreenState extends State<GuessScreen> {
   late List<List<FocusNode>> focusNodes;
   late List<List<Color>> boxColors;
 
+  // Timer variables
+  int remainingSeconds = 60;
+  Timer? timer;
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +91,25 @@ class _GuessScreenState extends State<GuessScreen> {
 
     score = widget.initialscore;
     initializeGame();
+
+    // Start timer for TimeBased level
+    if (widget.names[widget.index] == "TimeBased") {
+      startTimer();
+    }
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void resetTimer() {
+    timer?.cancel();
+    setState(() {
+      remainingSeconds = 60;
+    });
+    startTimer();
   }
 
   void initializeGame() {
@@ -102,6 +128,34 @@ class _GuessScreenState extends State<GuessScreen> {
     );
     currentTry = 0;
     isGameOver = false;
+    if (widget.names[widget.index] == "TimeBased") {
+      resetTimer();
+    }
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (remainingSeconds > 0) {
+        setState(() {
+          remainingSeconds--;
+        });
+      } else {
+        timer.cancel();
+        endGameDueToTimeout();
+      }
+    });
+  }
+
+  void endGameDueToTimeout() {
+    setState(() {
+      isGameOver = true;
+    });
+    showSnackBar(
+        "Time's up! The correct word was '${words[currentWordIndex]}'.");
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => gameoverscreen(index: widget.index)));
   }
 
   void checkGuess(int row) {
@@ -142,6 +196,11 @@ class _GuessScreenState extends State<GuessScreen> {
           isGameOver = true;
           showSnackBar(
               "Game Over! The correct word was '${words[currentWordIndex]}'.");
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => gameoverscreen(index: widget.index)));
         }
       }
     });
@@ -264,6 +323,27 @@ class _GuessScreenState extends State<GuessScreen> {
                     SizedBox(width: 10),
                   ],
                 ),
+                if (widget.names[widget.index] == "TimeBased")
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.white),
+                        child: SizedBox(
+                          width: 70,
+                          child: Center(
+                            child: Text(
+                              "00:$remainingSeconds",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 SizedBox(height: 50),
                 Row(
                   children: [
