@@ -233,7 +233,7 @@ class _GuessScreenState extends State<GuessScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close confirmation dialog
+                  Navigator.of(context).pop();
                 },
                 child: Text("Cancel", style: TextStyle(color: Colors.red)),
               ),
@@ -259,7 +259,7 @@ class _GuessScreenState extends State<GuessScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close confirmation dialog
+                  Navigator.of(context).pop();
                 },
                 child: Text("Close", style: TextStyle(color: Colors.red)),
               ),
@@ -284,7 +284,7 @@ class _GuessScreenState extends State<GuessScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close hint dialog
+                Navigator.of(context).pop(); 
               },
               child: Text(
                 "Close",
