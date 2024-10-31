@@ -4,10 +4,48 @@ import 'congratescreen.dart';
 
 class GuessScreen extends StatefulWidget {
   final List<List<String>> levels = [
-    ['apple', 'grape', 'peach', 'berry', 'lemon'],
-    ['orange', 'banana', 'melon', 'papaya', 'cherry'],
-    ['mango', 'coconut', 'guava', 'kiwifruit', 'passion'],
-    ['plum', 'apricot', 'nectarine', 'fig', 'lychee']
+    ['apple', 'house', 'chair', 'table', 'plant', 'river', 'piano'],
+    ['banana', 'planet', 'guitar', 'castle', 'island', 'engine', 'puzzle'],
+    ['meteor', 'museum', 'oxygen', 'thunder', 'stereo', 'mountain', 'jungle'],
+    ['calendar', 'rooster', 'season', 'sunrise', 'clock', 'festival', 'yearly']
+  ];
+  final List<List<String>> hints = [
+    [
+      'A fruit',
+      'A place to live',
+      'You sit on it',
+      'A piece of furniture',
+      'A green organism',
+      'Water flows here',
+      'A musical instrument'
+    ],
+    [
+      'Yellow fruit',
+      'Celestial body',
+      'Musical instrument',
+      'Big building',
+      'Surrounded by water',
+      'Drives machines',
+      'A game with pieces'
+    ],
+    [
+      'Space rock',
+      'Place with artifacts',
+      'Essential for breathing',
+      'Loud weather event',
+      'Sound system',
+      'Tall geographical feature',
+      'Dense forest'
+    ],
+    [
+      'Tracks days',
+      'Farm animal',
+      'Quarterly change',
+      'Morning light',
+      'Tells time',
+      'Joyous gathering',
+      'Annual event'
+    ]
   ];
   final List<String> names = ["Easy", "Intermediate", "Hard", "TimeBased"];
   final int index;
@@ -27,6 +65,7 @@ class _GuessScreenState extends State<GuessScreen> {
   int score = 0;
 
   late List<String> words;
+  late List<String> hints;
   late List<List<TextEditingController>> letterControllers;
   late List<List<FocusNode>> focusNodes;
   late List<List<Color>> boxColors;
@@ -34,7 +73,15 @@ class _GuessScreenState extends State<GuessScreen> {
   @override
   void initState() {
     super.initState();
-    words = widget.levels[widget.index];
+    hints = widget.hints[widget.index];
+    int randomIndex =
+        (List.generate(widget.levels[widget.index].length, (i) => i)..shuffle())
+            .first;
+    words = List.generate(
+        5,
+        (i) => widget.levels[widget.index]
+            [(randomIndex + i) % widget.levels[widget.index].length]);
+
     score = widget.initialscore;
     initializeGame();
   }
@@ -112,6 +159,85 @@ class _GuessScreenState extends State<GuessScreen> {
     }
   }
 
+  void showHintScreen() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        if (score >= 10) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF4B572B),
+            title: Text("Are you sure?", style: TextStyle(color: Colors.white)),
+            content: Text(
+              "Using a hint will cost 10 points. Do you want to proceed?",
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close confirmation dialog
+                },
+                child: Text("Cancel", style: TextStyle(color: Colors.red)),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    score -= 10;
+                  });
+                  Navigator.of(context).pop();
+                  showActualHintDialog();
+                },
+                child: Text("Proceed", style: TextStyle(color: Colors.green)),
+              ),
+            ],
+          );
+        } else {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF4B572B),
+            content: Text(
+              "sorry your score is not enough 😞",
+              style: TextStyle(color: Colors.white70, fontSize: 20),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close confirmation dialog
+                },
+                child: Text("Close", style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  void showActualHintDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF4B572B),
+          title: Text("💡Hint", style: TextStyle(color: Colors.white)),
+          content: Text(
+            hints[currentWordIndex],
+            style: TextStyle(color: Colors.white70, fontSize: 20),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close hint dialog
+              },
+              child: Text(
+                "Close",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
@@ -143,7 +269,7 @@ class _GuessScreenState extends State<GuessScreen> {
                   children: [
                     SizedBox(width: 30),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: showHintScreen,
                       child: Text("💡Hint", style: TextStyle(fontSize: 16)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9AC308),
