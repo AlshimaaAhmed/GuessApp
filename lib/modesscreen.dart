@@ -178,7 +178,7 @@ class ModeScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      height: 50,
+                      height: 130,
                     ),
                     Row(
                       children: [

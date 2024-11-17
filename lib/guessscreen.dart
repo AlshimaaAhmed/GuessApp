@@ -66,6 +66,7 @@ class _GuessScreenState extends State<GuessScreen> {
   int currentWordIndex = 0;
   bool isGameOver = false;
   int score = 0;
+  bool ishintshowen = false;
 
   late List<String> words;
   late List<String> hints;
@@ -73,7 +74,6 @@ class _GuessScreenState extends State<GuessScreen> {
   late List<List<FocusNode>> focusNodes;
   late List<List<Color>> boxColors;
 
-  // Timer variables
   int remainingSeconds = 60;
   Timer? timer;
 
@@ -81,18 +81,23 @@ class _GuessScreenState extends State<GuessScreen> {
   void initState() {
     super.initState();
     hints = widget.hints[widget.index];
-    int randomIndex =
-        (List.generate(widget.levels[widget.index].length, (i) => i)..shuffle())
-            .first;
+
+    List<int> indices =
+        List.generate(widget.levels[widget.index].length, (i) => i)..shuffle();
     words = List.generate(
-        5,
-        (i) => widget.levels[widget.index]
-            [(randomIndex + i) % widget.levels[widget.index].length]);
+      5,
+      (i) => widget.levels[widget.index]
+          [indices[i % widget.levels[widget.index].length]],
+    );
+    hints = List.generate(
+      5,
+      (i) => widget.hints[widget.index]
+          [indices[i % widget.hints[widget.index].length]],
+    );
 
     score = widget.initialscore;
     initializeGame();
 
-    // Start timer for TimeBased level
     if (widget.names[widget.index] == "TimeBased") {
       startTimer();
     }
@@ -131,6 +136,7 @@ class _GuessScreenState extends State<GuessScreen> {
     if (widget.names[widget.index] == "TimeBased") {
       resetTimer();
     }
+    ishintshowen = false;
   }
 
   void startTimer() {
@@ -222,10 +228,16 @@ class _GuessScreenState extends State<GuessScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        if (score >= 10) {
+        if (ishintshowen) {
+          Future.microtask(() => showActualHintDialog());
+          return Container();
+        } else if (score >= 10) {
           return AlertDialog(
             backgroundColor: const Color(0xFF4B572B),
-            title: Text("Are you sure?", style: TextStyle(color: Colors.white)),
+            title: Text(
+              "Are you sure?",
+              style: TextStyle(color: Colors.white),
+            ),
             content: Text(
               "Using a hint will cost 10 points. Do you want to proceed?",
               style: TextStyle(color: Colors.white70),
@@ -241,6 +253,7 @@ class _GuessScreenState extends State<GuessScreen> {
                 onPressed: () {
                   setState(() {
                     score -= 10;
+                    ishintshowen = true;
                   });
                   Navigator.of(context).pop();
                   showActualHintDialog();
@@ -253,7 +266,7 @@ class _GuessScreenState extends State<GuessScreen> {
           return AlertDialog(
             backgroundColor: const Color(0xFF4B572B),
             content: Text(
-              "sorry your score is not enough 😞",
+              "Sorry, your score is not enough 😞",
               style: TextStyle(color: Colors.white70, fontSize: 20),
             ),
             actions: [
@@ -284,7 +297,7 @@ class _GuessScreenState extends State<GuessScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
               child: Text(
                 "Close",
