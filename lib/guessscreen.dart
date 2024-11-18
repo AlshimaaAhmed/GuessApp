@@ -176,7 +176,7 @@ class _GuessScreenState extends State<GuessScreen> {
 
     setState(() {
       if (guess == words[currentWordIndex]) {
-        score += 10; // Add 10 points for correct answer
+        score += 10;
         isGameOver = true;
         boxColors[row] =
             List.filled(words[currentWordIndex].length, Colors.green);
@@ -318,6 +318,7 @@ class _GuessScreenState extends State<GuessScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Stack(
@@ -372,15 +373,16 @@ class _GuessScreenState extends State<GuessScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 100),
                 Center(
-                  child: SizedBox(
-                    width: 400,
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: const Color(0xFF9AC308),
                       ),
+                      padding: EdgeInsets.all(8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [

@@ -134,7 +134,6 @@ class _CongratescreenState extends State<Congratescreen> {
                 ],
               ),
             ),
-            // Add the ConfettiWidget here
             ConfettiWidget(
               blastDirection: 3.14 / 2,
               particleDrag: 0.05,
